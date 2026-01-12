@@ -145,5 +145,10 @@ namespace BP2_Projekt_Teretana
                 lblPoruka.Text = ex.Message;
             }
         }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

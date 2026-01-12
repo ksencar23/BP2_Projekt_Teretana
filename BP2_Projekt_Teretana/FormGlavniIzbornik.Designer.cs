@@ -34,9 +34,10 @@
             // 
             // btnUplata
             // 
-            btnUplata.Location = new Point(94, 74);
+            btnUplata.Location = new Point(109, 105);
+            btnUplata.Margin = new Padding(4);
             btnUplata.Name = "btnUplata";
-            btnUplata.Size = new Size(75, 23);
+            btnUplata.Size = new Size(120, 35);
             btnUplata.TabIndex = 0;
             btnUplata.Text = "Uplata";
             btnUplata.UseVisualStyleBackColor = true;
@@ -44,9 +45,10 @@
             // 
             // btnPrijava
             // 
-            btnPrijava.Location = new Point(94, 162);
+            btnPrijava.Location = new Point(109, 213);
+            btnPrijava.Margin = new Padding(4);
             btnPrijava.Name = "btnPrijava";
-            btnPrijava.Size = new Size(75, 23);
+            btnPrijava.Size = new Size(120, 35);
             btnPrijava.TabIndex = 1;
             btnPrijava.Text = "Prijava";
             btnPrijava.UseVisualStyleBackColor = true;
@@ -54,13 +56,19 @@
             // 
             // FormGlavniIzbornik
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(265, 250);
+            BackColor = Color.White;
+            ClientSize = new Size(341, 350);
             Controls.Add(btnPrijava);
             Controls.Add(btnUplata);
+            Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Margin = new Padding(4);
+            MinimizeBox = false;
             Name = "FormGlavniIzbornik";
-            Text = "FormGlavniIzbornik";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Glavni izbornik";
             Load += FormGlavniIzbornik_Load;
             ResumeLayout(false);
         }

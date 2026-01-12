@@ -38,14 +38,26 @@
             lblClanarinaId = new Label();
             lblDatumUplate = new Label();
             lblIznosUplate = new Label();
+            Column1 = new DataGridViewTextBoxColumn();
+            Column2 = new DataGridViewTextBoxColumn();
+            Column3 = new DataGridViewTextBoxColumn();
+            Column4 = new DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)dgvUplata).BeginInit();
             SuspendLayout();
             // 
             // dgvUplata
             // 
+            dgvUplata.AllowUserToAddRows = false;
+            dgvUplata.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvUplata.BackgroundColor = Color.White;
             dgvUplata.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvUplata.Columns.AddRange(new DataGridViewColumn[] { Column1, Column2, Column3, Column4 });
             dgvUplata.Location = new Point(50, 42);
+            dgvUplata.MultiSelect = false;
             dgvUplata.Name = "dgvUplata";
+            dgvUplata.ReadOnly = true;
+            dgvUplata.RowHeadersVisible = false;
+            dgvUplata.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvUplata.Size = new Size(502, 207);
             dgvUplata.TabIndex = 0;
             // 
@@ -126,6 +138,30 @@
             lblIznosUplate.TabIndex = 10;
             lblIznosUplate.Text = "Iznos uplate:";
             // 
+            // Column1
+            // 
+            Column1.HeaderText = "ID uplate";
+            Column1.Name = "Column1";
+            Column1.ReadOnly = true;
+            // 
+            // Column2
+            // 
+            Column2.HeaderText = "Članarina";
+            Column2.Name = "Column2";
+            Column2.ReadOnly = true;
+            // 
+            // Column3
+            // 
+            Column3.HeaderText = "Datum";
+            Column3.Name = "Column3";
+            Column3.ReadOnly = true;
+            // 
+            // Column4
+            // 
+            Column4.HeaderText = "Iznos";
+            Column4.Name = "Column4";
+            Column4.ReadOnly = true;
+            // 
             // FormUplata
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -161,5 +197,9 @@
         private Label lblClanarinaId;
         private Label lblDatumUplate;
         private Label lblIznosUplate;
+        private DataGridViewTextBoxColumn Column1;
+        private DataGridViewTextBoxColumn Column2;
+        private DataGridViewTextBoxColumn Column3;
+        private DataGridViewTextBoxColumn Column4;
     }
 }
