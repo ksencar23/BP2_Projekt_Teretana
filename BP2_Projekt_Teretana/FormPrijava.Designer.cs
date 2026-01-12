@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             dgvPrijave = new DataGridView();
-            Column1 = new DataGridViewTextBoxColumn();
             txtClanId = new TextBox();
             lblClanId = new Label();
             txtTerminId = new TextBox();
@@ -49,7 +48,6 @@
             dgvPrijave.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvPrijave.BackgroundColor = Color.White;
             dgvPrijave.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvPrijave.Columns.AddRange(new DataGridViewColumn[] { Column1 });
             dgvPrijave.Dock = DockStyle.Top;
             dgvPrijave.Location = new Point(4, 4);
             dgvPrijave.Margin = new Padding(4);
@@ -60,12 +58,6 @@
             dgvPrijave.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvPrijave.Size = new Size(958, 155);
             dgvPrijave.TabIndex = 0;
-            // 
-            // Column1
-            // 
-            Column1.HeaderText = "ID prijave";
-            Column1.Name = "Column1";
-            Column1.ReadOnly = true;
             // 
             // txtClanId
             // 
@@ -200,6 +192,5 @@
         private Button btnObrisi;
         private Label lblPoruka;
         private TableLayoutPanel tableLayoutPanel1;
-        private DataGridViewTextBoxColumn Column1;
     }
 }

@@ -35,6 +35,12 @@ namespace BP2_Projekt_Teretana
                 );
 
                 dgvUplata.DataSource = dt;
+
+                dgvUplata.Columns["uplata_id"].HeaderText = "ID uplate";
+                dgvUplata.Columns["clanarina_id"].HeaderText = "Članarina ID";
+                dgvUplata.Columns["datum_uplate"].HeaderText = "Datum uplate";
+                dgvUplata.Columns["iznos"].HeaderText = "Iznos (€)";
+
                 lblPoruka.Text = "";
             }
             catch (Exception ex)

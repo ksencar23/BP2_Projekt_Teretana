@@ -34,10 +34,11 @@
             // 
             // btnUplata
             // 
-            btnUplata.Location = new Point(109, 105);
+            btnUplata.Anchor = AnchorStyles.None;
+            btnUplata.Location = new Point(78, 63);
             btnUplata.Margin = new Padding(4);
             btnUplata.Name = "btnUplata";
-            btnUplata.Size = new Size(120, 35);
+            btnUplata.Size = new Size(180, 45);
             btnUplata.TabIndex = 0;
             btnUplata.Text = "Uplata";
             btnUplata.UseVisualStyleBackColor = true;
@@ -45,10 +46,11 @@
             // 
             // btnPrijava
             // 
-            btnPrijava.Location = new Point(109, 213);
+            btnPrijava.Anchor = AnchorStyles.None;
+            btnPrijava.Location = new Point(78, 151);
             btnPrijava.Margin = new Padding(4);
             btnPrijava.Name = "btnPrijava";
-            btnPrijava.Size = new Size(120, 35);
+            btnPrijava.Size = new Size(180, 45);
             btnPrijava.TabIndex = 1;
             btnPrijava.Text = "Prijava";
             btnPrijava.UseVisualStyleBackColor = true;
@@ -59,7 +61,7 @@
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(341, 350);
+            ClientSize = new Size(334, 261);
             Controls.Add(btnPrijava);
             Controls.Add(btnUplata);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);

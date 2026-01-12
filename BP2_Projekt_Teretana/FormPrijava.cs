@@ -39,6 +39,12 @@ namespace BP2_Projekt_Teretana
                 );
 
                 dgvPrijave.DataSource = dt;
+
+                dgvPrijave.Columns["prijava_id"].HeaderText = "ID prijave";
+                dgvPrijave.Columns["clan_id"].HeaderText = "ID člana";
+                dgvPrijave.Columns["termin_treninga_id"].HeaderText = "Termin treninga";
+                dgvPrijave.Columns["datum_prijave"].HeaderText = "Datum prijave";
+                dgvPrijave.Columns["status"].HeaderText = "Status";
                 lblPoruka.Text = "";
             }
             catch (Exception ex)
