@@ -38,6 +38,7 @@
             btnObrisi = new Button();
             lblPoruka = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
+            lblPoruka1 = new Label();
             ((System.ComponentModel.ISupportInitialize)dgvPrijave).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
@@ -48,7 +49,7 @@
             dgvPrijave.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvPrijave.BackgroundColor = Color.White;
             dgvPrijave.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvPrijave.Dock = DockStyle.Top;
+            dgvPrijave.Dock = DockStyle.Fill;
             dgvPrijave.Location = new Point(4, 4);
             dgvPrijave.Margin = new Padding(4);
             dgvPrijave.MultiSelect = false;
@@ -56,12 +57,12 @@
             dgvPrijave.ReadOnly = true;
             dgvPrijave.RowHeadersVisible = false;
             dgvPrijave.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPrijave.Size = new Size(958, 155);
+            dgvPrijave.Size = new Size(960, 318);
             dgvPrijave.TabIndex = 0;
             // 
             // txtClanId
             // 
-            txtClanId.Location = new Point(253, 387);
+            txtClanId.Location = new Point(98, 338);
             txtClanId.Margin = new Padding(4);
             txtClanId.Name = "txtClanId";
             txtClanId.Size = new Size(127, 29);
@@ -70,7 +71,7 @@
             // lblClanId
             // 
             lblClanId.AutoSize = true;
-            lblClanId.Location = new Point(185, 390);
+            lblClanId.Location = new Point(13, 341);
             lblClanId.Margin = new Padding(4, 0, 4, 0);
             lblClanId.Name = "lblClanId";
             lblClanId.Size = new Size(61, 21);
@@ -79,7 +80,7 @@
             // 
             // txtTerminId
             // 
-            txtTerminId.Location = new Point(253, 472);
+            txtTerminId.Location = new Point(98, 387);
             txtTerminId.Margin = new Padding(4);
             txtTerminId.Name = "txtTerminId";
             txtTerminId.Size = new Size(127, 29);
@@ -88,7 +89,7 @@
             // lblTerminId
             // 
             lblTerminId.AutoSize = true;
-            lblTerminId.Location = new Point(168, 476);
+            lblTerminId.Location = new Point(13, 390);
             lblTerminId.Margin = new Padding(4, 0, 4, 0);
             lblTerminId.Name = "lblTerminId";
             lblTerminId.Size = new Size(77, 21);
@@ -97,38 +98,41 @@
             // 
             // btnPrijavi
             // 
-            btnPrijavi.Location = new Point(185, 544);
+            btnPrijavi.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnPrijavi.Location = new Point(13, 501);
             btnPrijavi.Margin = new Padding(4);
             btnPrijavi.Name = "btnPrijavi";
-            btnPrijavi.Size = new Size(96, 32);
+            btnPrijavi.Size = new Size(130, 40);
             btnPrijavi.TabIndex = 5;
-            btnPrijavi.Text = "Unesi";
+            btnPrijavi.Text = "UNESI";
             btnPrijavi.UseVisualStyleBackColor = true;
             // 
             // btnOtkazi
             // 
-            btnOtkazi.Location = new Point(409, 544);
+            btnOtkazi.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnOtkazi.Location = new Point(422, 501);
             btnOtkazi.Margin = new Padding(4);
             btnOtkazi.Name = "btnOtkazi";
-            btnOtkazi.Size = new Size(96, 32);
+            btnOtkazi.Size = new Size(130, 40);
             btnOtkazi.TabIndex = 6;
-            btnOtkazi.Text = "Otkaži";
+            btnOtkazi.Text = "OTKAŽI";
             btnOtkazi.UseVisualStyleBackColor = true;
             // 
             // btnObrisi
             // 
-            btnObrisi.Location = new Point(635, 544);
+            btnObrisi.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnObrisi.Location = new Point(825, 501);
             btnObrisi.Margin = new Padding(4);
             btnObrisi.Name = "btnObrisi";
-            btnObrisi.Size = new Size(96, 32);
+            btnObrisi.Size = new Size(130, 40);
             btnObrisi.TabIndex = 7;
-            btnObrisi.Text = "Obriši";
+            btnObrisi.Text = "OBRIŠI";
             btnObrisi.UseVisualStyleBackColor = true;
             // 
             // lblPoruka
             // 
             lblPoruka.AutoSize = true;
-            lblPoruka.Location = new Point(647, 390);
+            lblPoruka.Location = new Point(512, 341);
             lblPoruka.Margin = new Padding(4, 0, 4, 0);
             lblPoruka.Name = "lblPoruka";
             lblPoruka.Size = new Size(58, 21);
@@ -144,19 +148,29 @@
             tableLayoutPanel1.Dock = DockStyle.Top;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(966, 326);
+            tableLayoutPanel1.Size = new Size(968, 326);
             tableLayoutPanel1.TabIndex = 9;
             tableLayoutPanel1.Paint += tableLayoutPanel1_Paint;
+            // 
+            // lblPoruka1
+            // 
+            lblPoruka1.AutoSize = true;
+            lblPoruka1.Location = new Point(444, 341);
+            lblPoruka1.Name = "lblPoruka1";
+            lblPoruka1.Size = new Size(61, 21);
+            lblPoruka1.TabIndex = 10;
+            lblPoruka1.Text = "Poruka:";
             // 
             // FormPrijava
             // 
             AutoScaleDimensions = new SizeF(9F, 21F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(966, 630);
+            ClientSize = new Size(968, 576);
+            Controls.Add(lblPoruka1);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(lblPoruka);
             Controls.Add(btnObrisi);
@@ -192,5 +206,6 @@
         private Button btnObrisi;
         private Label lblPoruka;
         private TableLayoutPanel tableLayoutPanel1;
+        private Label lblPoruka1;
     }
 }
