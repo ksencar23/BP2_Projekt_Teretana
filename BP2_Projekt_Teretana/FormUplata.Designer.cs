@@ -164,7 +164,7 @@
             // 
             lblPoruka2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblPoruka2.AutoSize = true;
-            lblPoruka2.Location = new Point(435, 431);
+            lblPoruka2.Location = new Point(435, 425);
             lblPoruka2.Name = "lblPoruka2";
             lblPoruka2.Size = new Size(76, 28);
             lblPoruka2.TabIndex = 12;
@@ -174,7 +174,7 @@
             // 
             txtPoruka.BackColor = Color.White;
             txtPoruka.BorderStyle = BorderStyle.FixedSingle;
-            txtPoruka.Location = new Point(578, 425);
+            txtPoruka.Location = new Point(578, 428);
             txtPoruka.Multiline = true;
             txtPoruka.Name = "txtPoruka";
             txtPoruka.ReadOnly = true;

@@ -36,7 +36,6 @@
             btnPrijavi = new Button();
             btnOtkazi = new Button();
             btnObrisi = new Button();
-            lblPoruka = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             lblPoruka1 = new Label();
             txtPoruka = new TextBox();
@@ -130,17 +129,6 @@
             btnObrisi.TabIndex = 5;
             btnObrisi.Text = "OBRIŠI";
             btnObrisi.UseVisualStyleBackColor = true;
-      
-            // 
-            // lblPoruka
-            // 
-            lblPoruka.AutoSize = true;
-            lblPoruka.Location = new Point(343, 393);
-            lblPoruka.Margin = new Padding(4, 0, 4, 0);
-            lblPoruka.Name = "lblPoruka";
-            lblPoruka.Size = new Size(72, 28);
-            lblPoruka.TabIndex = 8;
-            lblPoruka.Text = "Poruka";
             // 
             // tableLayoutPanel1
             // 
@@ -188,7 +176,6 @@
             Controls.Add(txtPoruka);
             Controls.Add(lblPoruka1);
             Controls.Add(tableLayoutPanel1);
-            Controls.Add(lblPoruka);
             Controls.Add(btnObrisi);
             Controls.Add(btnOtkazi);
             Controls.Add(btnPrijavi);
@@ -220,7 +207,6 @@
         private Button btnPrijavi;
         private Button btnOtkazi;
         private Button btnObrisi;
-        private Label lblPoruka;
         private TableLayoutPanel tableLayoutPanel1;
         private Label lblPoruka1;
         private TextBox txtPoruka;
