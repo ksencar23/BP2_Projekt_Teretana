@@ -30,12 +30,13 @@
         {
             btnUplata = new Button();
             btnPrijava = new Button();
+            btnTerminTreninga = new Button();
             SuspendLayout();
             // 
             // btnUplata
             // 
             btnUplata.Anchor = AnchorStyles.None;
-            btnUplata.Location = new Point(78, 63);
+            btnUplata.Location = new Point(122, 66);
             btnUplata.Margin = new Padding(4);
             btnUplata.Name = "btnUplata";
             btnUplata.Size = new Size(180, 45);
@@ -47,7 +48,7 @@
             // btnPrijava
             // 
             btnPrijava.Anchor = AnchorStyles.None;
-            btnPrijava.Location = new Point(78, 151);
+            btnPrijava.Location = new Point(122, 149);
             btnPrijava.Margin = new Padding(4);
             btnPrijava.Name = "btnPrijava";
             btnPrijava.Size = new Size(180, 45);
@@ -56,12 +57,25 @@
             btnPrijava.UseVisualStyleBackColor = true;
             btnPrijava.Click += btnPrijava_Click;
             // 
+            // btnTerminTreninga
+            // 
+            btnTerminTreninga.Anchor = AnchorStyles.None;
+            btnTerminTreninga.Location = new Point(122, 235);
+            btnTerminTreninga.Margin = new Padding(4);
+            btnTerminTreninga.Name = "btnTerminTreninga";
+            btnTerminTreninga.Size = new Size(180, 45);
+            btnTerminTreninga.TabIndex = 2;
+            btnTerminTreninga.Text = "Termin treninga";
+            btnTerminTreninga.UseVisualStyleBackColor = true;
+            btnTerminTreninga.Click += btnTerminTreninga_Click;
+            // 
             // FormGlavniIzbornik
             // 
-            AutoScaleDimensions = new SizeF(9F, 21F);
+            AutoScaleDimensions = new SizeF(11F, 28F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(334, 261);
+            ClientSize = new Size(423, 345);
+            Controls.Add(btnTerminTreninga);
             Controls.Add(btnPrijava);
             Controls.Add(btnUplata);
             Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
@@ -79,5 +93,6 @@
 
         private Button btnUplata;
         private Button btnPrijava;
+        private Button btnTerminTreninga;
     }
 }

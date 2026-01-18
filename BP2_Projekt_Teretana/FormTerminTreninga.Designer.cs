@@ -39,6 +39,7 @@
             cbDvorana = new ComboBox();
             nudTrajanjeMin = new NumericUpDown();
             nudKapacitet = new NumericUpDown();
+            btnOcisti = new Button();
             ((System.ComponentModel.ISupportInitialize)dgvTermini).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudTrajanjeMin).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudKapacitet).BeginInit();
@@ -71,7 +72,7 @@
             // 
             // btnDodaj
             // 
-            btnDodaj.Location = new Point(152, 395);
+            btnDodaj.Location = new Point(46, 395);
             btnDodaj.Name = "btnDodaj";
             btnDodaj.Size = new Size(94, 29);
             btnDodaj.TabIndex = 8;
@@ -80,7 +81,7 @@
             // 
             // btnAzuriraj
             // 
-            btnAzuriraj.Location = new Point(345, 395);
+            btnAzuriraj.Location = new Point(259, 395);
             btnAzuriraj.Name = "btnAzuriraj";
             btnAzuriraj.Size = new Size(94, 29);
             btnAzuriraj.TabIndex = 9;
@@ -89,7 +90,7 @@
             // 
             // btnObrisi
             // 
-            btnObrisi.Location = new Point(561, 395);
+            btnObrisi.Location = new Point(429, 395);
             btnObrisi.Name = "btnObrisi";
             btnObrisi.Size = new Size(94, 29);
             btnObrisi.TabIndex = 10;
@@ -132,22 +133,38 @@
             // nudTrajanjeMin
             // 
             nudTrajanjeMin.Location = new Point(96, 283);
+            nudTrajanjeMin.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
+            nudTrajanjeMin.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudTrajanjeMin.Name = "nudTrajanjeMin";
             nudTrajanjeMin.Size = new Size(150, 27);
             nudTrajanjeMin.TabIndex = 14;
+            nudTrajanjeMin.Value = new decimal(new int[] { 60, 0, 0, 0 });
             // 
             // nudKapacitet
             // 
             nudKapacitet.Location = new Point(96, 335);
+            nudKapacitet.Maximum = new decimal(new int[] { 200, 0, 0, 0 });
+            nudKapacitet.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             nudKapacitet.Name = "nudKapacitet";
             nudKapacitet.Size = new Size(150, 27);
             nudKapacitet.TabIndex = 15;
+            nudKapacitet.Value = new decimal(new int[] { 10, 0, 0, 0 });
+            // 
+            // btnOcisti
+            // 
+            btnOcisti.Location = new Point(620, 395);
+            btnOcisti.Name = "btnOcisti";
+            btnOcisti.Size = new Size(94, 29);
+            btnOcisti.TabIndex = 16;
+            btnOcisti.Text = "OCISTI";
+            btnOcisti.UseVisualStyleBackColor = true;
             // 
             // FormTerminTreninga
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnOcisti);
             Controls.Add(nudKapacitet);
             Controls.Add(nudTrajanjeMin);
             Controls.Add(cbDvorana);
@@ -161,6 +178,7 @@
             Controls.Add(dgvTermini);
             Name = "FormTerminTreninga";
             Text = "Termin treninga";
+            Load += FormTerminTreninga_Load;
             ((System.ComponentModel.ISupportInitialize)dgvTermini).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudTrajanjeMin).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudKapacitet).EndInit();
@@ -181,5 +199,6 @@
         private ComboBox cbDvorana;
         private NumericUpDown nudTrajanjeMin;
         private NumericUpDown nudKapacitet;
+        private Button btnOcisti;
     }
 }

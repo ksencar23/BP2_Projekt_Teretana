@@ -28,5 +28,10 @@ namespace BP2_Projekt_Teretana
         {
             new FormPrijava().ShowDialog();
         }
+
+        private void btnTerminTreninga_Click(object sender, EventArgs e)
+        {
+            new FormTerminTreninga().ShowDialog();       
+        }
     }
 }
