@@ -27,6 +27,16 @@ namespace BP2_Projekt_Teretana
             Osvjezi();
         }
 
+        private void SetPoruka(string poruka)
+        {
+            // helper da sve poruke idu na isto mjesto
+            txtPoruka.Text = poruka ?? "";
+
+            // skrol na kraj (korisno ako je poruka dugačka)
+            txtPoruka.SelectionStart = txtPoruka.Text.Length;
+            txtPoruka.ScrollToCaret();
+        }
+
         private void Osvjezi()
         {
             try
@@ -40,16 +50,29 @@ namespace BP2_Projekt_Teretana
 
                 dgvPrijave.DataSource = dt;
 
-                dgvPrijave.Columns["prijava_id"].HeaderText = "ID prijave";
-                dgvPrijave.Columns["clan_id"].HeaderText = "ID člana";
-                dgvPrijave.Columns["termin_treninga_id"].HeaderText = "Termin treninga";
-                dgvPrijave.Columns["datum_prijave"].HeaderText = "Datum prijave";
-                dgvPrijave.Columns["status"].HeaderText = "Status";
-                lblPoruka.Text = "";
+                if (dgvPrijave.Columns != null)
+                {
+                    if (dgvPrijave.Columns.Contains("prijava_id"))
+                        dgvPrijave.Columns["prijava_id"].HeaderText = "ID prijave";
+
+                    if (dgvPrijave.Columns.Contains("clan_id"))
+                        dgvPrijave.Columns["clan_id"].HeaderText = "ID člana";
+
+                    if (dgvPrijave.Columns.Contains("termin_treninga_id"))
+                        dgvPrijave.Columns["termin_treninga_id"].HeaderText = "Termin treninga";
+
+                    if (dgvPrijave.Columns.Contains("datum_prijave"))
+                        dgvPrijave.Columns["datum_prijave"].HeaderText = "Datum prijave";
+
+                    if (dgvPrijave.Columns.Contains("status"))
+                        dgvPrijave.Columns["status"].HeaderText = "Status";
+                }
+
+                SetPoruka("");
             }
             catch (Exception ex)
             {
-                lblPoruka.Text = "Greška kod učitavanja: " + ex.Message;
+                SetPoruka("Greška kod učitavanja: " + ex.Message);
             }
         }
 
@@ -59,13 +82,13 @@ namespace BP2_Projekt_Teretana
             {
                 if (!int.TryParse(txtClanId.Text.Trim(), out int clanId))
                 {
-                    lblPoruka.Text = "Unesi ispravan clan_id (broj).";
+                    SetPoruka("Unesi ispravan clan_id (broj).");
                     return;
                 }
 
                 if (!int.TryParse(txtTerminId.Text.Trim(), out int terminId))
                 {
-                    lblPoruka.Text = "Unesi ispravan termin_treninga_id (broj).";
+                    SetPoruka("Unesi ispravan termin_treninga_id (broj).");
                     return;
                 }
 
@@ -76,13 +99,13 @@ namespace BP2_Projekt_Teretana
                     new NpgsqlParameter("@t", terminId)
                 );
 
-                lblPoruka.Text = "Prijava je uspješno spremljena.";
+                SetPoruka("Prijava je uspješno spremljena.");
                 Osvjezi();
             }
             catch (Exception ex)
             {
                 // Ovdje ćeš dobiti poruku iz triggera (npr. nema članarinu / termin pun / prošao termin)
-                lblPoruka.Text = ex.Message;
+                SetPoruka(ex.Message);
             }
         }
 
@@ -92,14 +115,14 @@ namespace BP2_Projekt_Teretana
             {
                 if (dgvPrijave.CurrentRow == null)
                 {
-                    lblPoruka.Text = "Odaberi prijavu koju želiš otkazati.";
+                    SetPoruka("Odaberi prijavu koju želiš otkazati.");
                     return;
                 }
 
                 object? v = dgvPrijave.CurrentRow.Cells["prijava_id"]?.Value;
                 if (v == null)
                 {
-                    lblPoruka.Text = "Ne mogu pročitati prijava_id iz odabranog reda.";
+                    SetPoruka("Ne mogu pročitati prijava_id iz odabranog reda.");
                     return;
                 }
 
@@ -110,12 +133,12 @@ namespace BP2_Projekt_Teretana
                     new NpgsqlParameter("@id", prijavaId)
                 );
 
-                lblPoruka.Text = "Prijava je otkazana (status = otkazana).";
+                SetPoruka("Prijava je otkazana (status = otkazana).");
                 Osvjezi();
             }
             catch (Exception ex)
             {
-                lblPoruka.Text = ex.Message;
+                SetPoruka(ex.Message);
             }
         }
 
@@ -125,14 +148,14 @@ namespace BP2_Projekt_Teretana
             {
                 if (dgvPrijave.CurrentRow == null)
                 {
-                    lblPoruka.Text = "Odaberi prijavu koju želiš obrisati.";
+                    SetPoruka("Odaberi prijavu koju želiš obrisati.");
                     return;
                 }
 
                 object? v = dgvPrijave.CurrentRow.Cells["prijava_id"]?.Value;
                 if (v == null)
                 {
-                    lblPoruka.Text = "Ne mogu pročitati prijava_id iz odabranog reda.";
+                    SetPoruka("Ne mogu pročitati prijava_id iz odabranog reda.");
                     return;
                 }
 
@@ -143,18 +166,17 @@ namespace BP2_Projekt_Teretana
                     new NpgsqlParameter("@id", prijavaId)
                 );
 
-                lblPoruka.Text = "Prijava je obrisana.";
+                SetPoruka("Prijava je obrisana.");
                 Osvjezi();
             }
             catch (Exception ex)
             {
-                lblPoruka.Text = ex.Message;
+                SetPoruka(ex.Message);
             }
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
-
         }
     }
 }

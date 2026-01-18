@@ -16,11 +16,21 @@ namespace BP2_Projekt_Teretana
             dgvUplata.MultiSelect = false;
             dgvUplata.ReadOnly = true; // mi radimo INSERT/DELETE preko gumbi
             dgvUplata.AllowUserToAddRows = false;
+
+            // Ako ti nije spojeno u Designeru, ovo osigurava da se Load pozove
+            Load += FormUplata_Load;
         }
 
         private void FormUplata_Load(object? sender, EventArgs e)
         {
             Osvjezi();
+        }
+
+        private void SetPoruka(string poruka)
+        {
+            txtPoruka.Text = poruka ?? "";
+            txtPoruka.SelectionStart = txtPoruka.Text.Length;
+            txtPoruka.ScrollToCaret();
         }
 
         private void Osvjezi()
@@ -36,16 +46,27 @@ namespace BP2_Projekt_Teretana
 
                 dgvUplata.DataSource = dt;
 
-                dgvUplata.Columns["uplata_id"].HeaderText = "ID uplate";
-                dgvUplata.Columns["clanarina_id"].HeaderText = "Članarina ID";
-                dgvUplata.Columns["datum_uplate"].HeaderText = "Datum uplate";
-                dgvUplata.Columns["iznos"].HeaderText = "Iznos (€)";
+                // ✅ Sigurno postavljanje HeaderText (bez CS8602)
+                if (dgvUplata.Columns != null)
+                {
+                    if (dgvUplata.Columns.Contains("uplata_id"))
+                        dgvUplata.Columns["uplata_id"].HeaderText = "ID uplate";
 
-                lblPoruka.Text = "";
+                    if (dgvUplata.Columns.Contains("clanarina_id"))
+                        dgvUplata.Columns["clanarina_id"].HeaderText = "Članarina ID";
+
+                    if (dgvUplata.Columns.Contains("datum_uplate"))
+                        dgvUplata.Columns["datum_uplate"].HeaderText = "Datum uplate";
+
+                    if (dgvUplata.Columns.Contains("iznos"))
+                        dgvUplata.Columns["iznos"].HeaderText = "Iznos (€)";
+                }
+
+                SetPoruka("");
             }
             catch (Exception ex)
             {
-                lblPoruka.Text = "Greška kod učitavanja: " + ex.Message;
+                SetPoruka("Greška kod učitavanja: " + ex.Message);
             }
         }
 
@@ -55,13 +76,13 @@ namespace BP2_Projekt_Teretana
             {
                 if (!int.TryParse(txtClanarinaId.Text.Trim(), out int clanarinaId))
                 {
-                    lblPoruka.Text = "Unesi ispravan clanarina_id (broj).";
+                    SetPoruka("Unesi ispravan clanarina_id (broj).");
                     return;
                 }
 
                 if (!decimal.TryParse(txtIznos.Text.Trim(), out decimal iznos))
                 {
-                    lblPoruka.Text = "Unesi ispravan iznos (npr. 20.00).";
+                    SetPoruka("Unesi ispravan iznos (npr. 20.00).");
                     return;
                 }
 
@@ -74,13 +95,13 @@ namespace BP2_Projekt_Teretana
                     new NpgsqlParameter("@i", iznos)
                 );
 
-                lblPoruka.Text = "Uplata je uspješno spremljena.";
+                SetPoruka("Uplata je uspješno spremljena.");
                 Osvjezi();
             }
             catch (Exception ex)
             {
                 // Ovdje će doći i poruke iz triggera i FK greške
-                lblPoruka.Text = ex.Message;
+                SetPoruka(ex.Message);
             }
         }
 
@@ -90,7 +111,7 @@ namespace BP2_Projekt_Teretana
             {
                 if (dgvUplata.CurrentRow == null)
                 {
-                    lblPoruka.Text = "Odaberi red koji želiš obrisati.";
+                    SetPoruka("Odaberi red koji želiš obrisati.");
                     return;
                 }
 
@@ -98,7 +119,7 @@ namespace BP2_Projekt_Teretana
 
                 if (v == null)
                 {
-                    lblPoruka.Text = "Ne mogu pročitati uplata_id iz odabranog reda.";
+                    SetPoruka("Ne mogu pročitati uplata_id iz odabranog reda.");
                     return;
                 }
 
@@ -109,13 +130,17 @@ namespace BP2_Projekt_Teretana
                     new NpgsqlParameter("@id", uplataId)
                 );
 
-                lblPoruka.Text = "Uplata je obrisana.";
+                SetPoruka("Uplata je obrisana.");
                 Osvjezi();
             }
             catch (Exception ex)
             {
-                lblPoruka.Text = ex.Message;
+                SetPoruka(ex.Message);
             }
+        }
+
+        private void dgvUplata_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
         }
     }
 }

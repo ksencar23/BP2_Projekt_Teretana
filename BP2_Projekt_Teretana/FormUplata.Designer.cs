@@ -34,12 +34,12 @@
             txtIznos = new TextBox();
             btnDodaj = new Button();
             btnObrisi = new Button();
-            lblPoruka = new Label();
             lblClanarinaId = new Label();
             lblDatumUplate = new Label();
             lblIznosUplate = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             lblPoruka2 = new Label();
+            txtPoruka = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dgvUplata).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
@@ -57,34 +57,36 @@
             dgvUplata.Name = "dgvUplata";
             dgvUplata.ReadOnly = true;
             dgvUplata.RowHeadersVisible = false;
+            dgvUplata.RowHeadersWidth = 51;
             dgvUplata.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvUplata.Size = new Size(842, 330);
+            dgvUplata.Size = new Size(890, 330);
             dgvUplata.TabIndex = 0;
+            dgvUplata.CellContentClick += dgvUplata_CellContentClick;
             // 
             // txtClanarinaId
             // 
-            txtClanarinaId.Location = new Point(117, 425);
+            txtClanarinaId.Location = new Point(140, 425);
             txtClanarinaId.Margin = new Padding(4);
             txtClanarinaId.Name = "txtClanarinaId";
-            txtClanarinaId.Size = new Size(52, 29);
-            txtClanarinaId.TabIndex = 1;
+            txtClanarinaId.Size = new Size(52, 34);
+            txtClanarinaId.TabIndex = 2;
             // 
             // dtpDatum
             // 
             dtpDatum.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            dtpDatum.Location = new Point(576, 365);
+            dtpDatum.Location = new Point(578, 365);
             dtpDatum.Margin = new Padding(4);
             dtpDatum.Name = "dtpDatum";
-            dtpDatum.Size = new Size(256, 29);
-            dtpDatum.TabIndex = 2;
+            dtpDatum.Size = new Size(256, 34);
+            dtpDatum.TabIndex = 3;
             // 
             // txtIznos
             // 
-            txtIznos.Location = new Point(117, 365);
+            txtIznos.Location = new Point(142, 365);
             txtIznos.Margin = new Padding(4);
             txtIznos.Name = "txtIznos";
-            txtIznos.Size = new Size(127, 29);
-            txtIznos.TabIndex = 3;
+            txtIznos.Size = new Size(127, 34);
+            txtIznos.TabIndex = 1;
             // 
             // btnDodaj
             // 
@@ -103,7 +105,7 @@
             // 
             btnObrisi.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnObrisi.Font = new Font("Segoe UI", 12F, FontStyle.Bold);
-            btnObrisi.Location = new Point(551, 550);
+            btnObrisi.Location = new Point(599, 550);
             btnObrisi.Margin = new Padding(4);
             btnObrisi.Name = "btnObrisi";
             btnObrisi.Size = new Size(130, 40);
@@ -112,24 +114,13 @@
             btnObrisi.UseVisualStyleBackColor = true;
             btnObrisi.Click += btnObrisi_Click;
             // 
-            // lblPoruka
-            // 
-            lblPoruka.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            lblPoruka.AutoSize = true;
-            lblPoruka.Location = new Point(526, 433);
-            lblPoruka.Margin = new Padding(4, 0, 4, 0);
-            lblPoruka.Name = "lblPoruka";
-            lblPoruka.Size = new Size(42, 21);
-            lblPoruka.TabIndex = 6;
-            lblPoruka.Text = "Opis";
-            // 
             // lblClanarinaId
             // 
             lblClanarinaId.AutoSize = true;
             lblClanarinaId.Location = new Point(13, 428);
             lblClanarinaId.Margin = new Padding(4, 0, 4, 0);
             lblClanarinaId.Name = "lblClanarinaId";
-            lblClanarinaId.Size = new Size(96, 21);
+            lblClanarinaId.Size = new Size(119, 28);
             lblClanarinaId.TabIndex = 7;
             lblClanarinaId.Text = "Clanarina id:";
             // 
@@ -137,10 +128,10 @@
             // 
             lblDatumUplate.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblDatumUplate.AutoSize = true;
-            lblDatumUplate.Location = new Point(461, 365);
+            lblDatumUplate.Location = new Point(435, 365);
             lblDatumUplate.Margin = new Padding(4, 0, 4, 0);
             lblDatumUplate.Name = "lblDatumUplate";
-            lblDatumUplate.Size = new Size(107, 21);
+            lblDatumUplate.Size = new Size(135, 28);
             lblDatumUplate.TabIndex = 9;
             lblDatumUplate.Text = "Datum uplate:";
             // 
@@ -150,7 +141,7 @@
             lblIznosUplate.Location = new Point(13, 365);
             lblIznosUplate.Margin = new Padding(4, 0, 4, 0);
             lblIznosUplate.Name = "lblIznosUplate";
-            lblIznosUplate.Size = new Size(96, 21);
+            lblIznosUplate.Size = new Size(121, 28);
             lblIznosUplate.TabIndex = 10;
             lblIznosUplate.Text = "Iznos uplate:";
             // 
@@ -166,31 +157,43 @@
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(850, 338);
+            tableLayoutPanel1.Size = new Size(898, 338);
             tableLayoutPanel1.TabIndex = 11;
             // 
             // lblPoruka2
             // 
             lblPoruka2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             lblPoruka2.AutoSize = true;
-            lblPoruka2.Location = new Point(461, 433);
+            lblPoruka2.Location = new Point(435, 431);
             lblPoruka2.Name = "lblPoruka2";
-            lblPoruka2.Size = new Size(61, 21);
+            lblPoruka2.Size = new Size(76, 28);
             lblPoruka2.TabIndex = 12;
             lblPoruka2.Text = "Poruka:";
             // 
+            // txtPoruka
+            // 
+            txtPoruka.BackColor = Color.White;
+            txtPoruka.BorderStyle = BorderStyle.FixedSingle;
+            txtPoruka.Location = new Point(578, 425);
+            txtPoruka.Multiline = true;
+            txtPoruka.Name = "txtPoruka";
+            txtPoruka.ReadOnly = true;
+            txtPoruka.ScrollBars = ScrollBars.Vertical;
+            txtPoruka.Size = new Size(295, 107);
+            txtPoruka.TabIndex = 13;
+            // 
             // FormUplata
             // 
-            AutoScaleDimensions = new SizeF(9F, 21F);
+            AutoScaleDimensions = new SizeF(11F, 28F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(850, 620);
+            ClientSize = new Size(898, 620);
+            Controls.Add(txtPoruka);
             Controls.Add(lblPoruka2);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(lblIznosUplate);
             Controls.Add(lblDatumUplate);
             Controls.Add(lblClanarinaId);
-            Controls.Add(lblPoruka);
             Controls.Add(btnObrisi);
             Controls.Add(btnDodaj);
             Controls.Add(txtIznos);
@@ -217,11 +220,11 @@
         private TextBox txtIznos;
         private Button btnDodaj;
         private Button btnObrisi;
-        private Label lblPoruka;
         private Label lblClanarinaId;
         private Label lblDatumUplate;
         private Label lblIznosUplate;
         private TableLayoutPanel tableLayoutPanel1;
         private Label lblPoruka2;
+        private TextBox txtPoruka;
     }
 }

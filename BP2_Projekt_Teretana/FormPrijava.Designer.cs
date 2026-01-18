@@ -39,6 +39,7 @@
             lblPoruka = new Label();
             tableLayoutPanel1 = new TableLayoutPanel();
             lblPoruka1 = new Label();
+            txtPoruka = new TextBox();
             ((System.ComponentModel.ISupportInitialize)dgvPrijave).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
@@ -56,16 +57,17 @@
             dgvPrijave.Name = "dgvPrijave";
             dgvPrijave.ReadOnly = true;
             dgvPrijave.RowHeadersVisible = false;
+            dgvPrijave.RowHeadersWidth = 51;
             dgvPrijave.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvPrijave.Size = new Size(960, 318);
             dgvPrijave.TabIndex = 0;
             // 
             // txtClanId
             // 
-            txtClanId.Location = new Point(98, 338);
+            txtClanId.Location = new Point(117, 338);
             txtClanId.Margin = new Padding(4);
             txtClanId.Name = "txtClanId";
-            txtClanId.Size = new Size(127, 29);
+            txtClanId.Size = new Size(127, 34);
             txtClanId.TabIndex = 1;
             // 
             // lblClanId
@@ -74,17 +76,17 @@
             lblClanId.Location = new Point(13, 341);
             lblClanId.Margin = new Padding(4, 0, 4, 0);
             lblClanId.Name = "lblClanId";
-            lblClanId.Size = new Size(61, 21);
+            lblClanId.Size = new Size(76, 28);
             lblClanId.TabIndex = 2;
             lblClanId.Text = "Član id:";
             // 
             // txtTerminId
             // 
-            txtTerminId.Location = new Point(98, 387);
+            txtTerminId.Location = new Point(117, 387);
             txtTerminId.Margin = new Padding(4);
             txtTerminId.Name = "txtTerminId";
-            txtTerminId.Size = new Size(127, 29);
-            txtTerminId.TabIndex = 3;
+            txtTerminId.Size = new Size(127, 34);
+            txtTerminId.TabIndex = 2;
             // 
             // lblTerminId
             // 
@@ -92,7 +94,7 @@
             lblTerminId.Location = new Point(13, 390);
             lblTerminId.Margin = new Padding(4, 0, 4, 0);
             lblTerminId.Name = "lblTerminId";
-            lblTerminId.Size = new Size(77, 21);
+            lblTerminId.Size = new Size(96, 28);
             lblTerminId.TabIndex = 4;
             lblTerminId.Text = "Termin id:";
             // 
@@ -103,7 +105,7 @@
             btnPrijavi.Margin = new Padding(4);
             btnPrijavi.Name = "btnPrijavi";
             btnPrijavi.Size = new Size(130, 40);
-            btnPrijavi.TabIndex = 5;
+            btnPrijavi.TabIndex = 3;
             btnPrijavi.Text = "UNESI";
             btnPrijavi.UseVisualStyleBackColor = true;
             // 
@@ -114,7 +116,7 @@
             btnOtkazi.Margin = new Padding(4);
             btnOtkazi.Name = "btnOtkazi";
             btnOtkazi.Size = new Size(130, 40);
-            btnOtkazi.TabIndex = 6;
+            btnOtkazi.TabIndex = 4;
             btnOtkazi.Text = "OTKAŽI";
             btnOtkazi.UseVisualStyleBackColor = true;
             // 
@@ -125,17 +127,18 @@
             btnObrisi.Margin = new Padding(4);
             btnObrisi.Name = "btnObrisi";
             btnObrisi.Size = new Size(130, 40);
-            btnObrisi.TabIndex = 7;
+            btnObrisi.TabIndex = 5;
             btnObrisi.Text = "OBRIŠI";
             btnObrisi.UseVisualStyleBackColor = true;
+      
             // 
             // lblPoruka
             // 
             lblPoruka.AutoSize = true;
-            lblPoruka.Location = new Point(512, 341);
+            lblPoruka.Location = new Point(343, 393);
             lblPoruka.Margin = new Padding(4, 0, 4, 0);
             lblPoruka.Name = "lblPoruka";
-            lblPoruka.Size = new Size(58, 21);
+            lblPoruka.Size = new Size(72, 28);
             lblPoruka.TabIndex = 8;
             lblPoruka.Text = "Poruka";
             // 
@@ -160,16 +163,29 @@
             lblPoruka1.AutoSize = true;
             lblPoruka1.Location = new Point(444, 341);
             lblPoruka1.Name = "lblPoruka1";
-            lblPoruka1.Size = new Size(61, 21);
+            lblPoruka1.Size = new Size(76, 28);
             lblPoruka1.TabIndex = 10;
             lblPoruka1.Text = "Poruka:";
             // 
+            // txtPoruka
+            // 
+            txtPoruka.BackColor = Color.White;
+            txtPoruka.BorderStyle = BorderStyle.FixedSingle;
+            txtPoruka.Location = new Point(526, 348);
+            txtPoruka.Multiline = true;
+            txtPoruka.Name = "txtPoruka";
+            txtPoruka.ReadOnly = true;
+            txtPoruka.ScrollBars = ScrollBars.Vertical;
+            txtPoruka.Size = new Size(381, 129);
+            txtPoruka.TabIndex = 11;
+            // 
             // FormPrijava
             // 
-            AutoScaleDimensions = new SizeF(9F, 21F);
+            AutoScaleDimensions = new SizeF(11F, 28F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
             ClientSize = new Size(968, 576);
+            Controls.Add(txtPoruka);
             Controls.Add(lblPoruka1);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(lblPoruka);
@@ -207,5 +223,6 @@
         private Label lblPoruka;
         private TableLayoutPanel tableLayoutPanel1;
         private Label lblPoruka1;
+        private TextBox txtPoruka;
     }
 }
