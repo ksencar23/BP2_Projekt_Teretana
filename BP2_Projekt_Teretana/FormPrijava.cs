@@ -13,7 +13,6 @@ namespace BP2_Projekt_Teretana
         {
             InitializeComponent();
 
-            // Grid ponašanje
             dgvPrijave.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvPrijave.MultiSelect = false;
             dgvPrijave.ReadOnly = true;
@@ -41,7 +40,8 @@ namespace BP2_Projekt_Teretana
         {
             _ucitavanje = true;
 
-            UcitajListe();
+            UcitajClanove();
+            UcitajTermine();
             OsvjeziPrijave();
 
             _ucitavanje = false;
@@ -57,168 +57,142 @@ namespace BP2_Projekt_Teretana
         }
 
         // ---------------------------
-        // Učitavanje lista (članovi + termini)
+        // Generic ComboBox load
         // ---------------------------
-        private void UcitajListe()
+        private void UcitajClanove(object? keepSelected = null)
         {
-            try
-            {
-                // Članovi
-                DataTable dtClan = Db.Query(
-                    "select clan_id, (ime || ' ' || prezime) as naziv " +
-                    "from clan " +
-                    "order by naziv"
-                );
-
-                cbClan.DisplayMember = "naziv";
-                cbClan.ValueMember = "clan_id";
-                cbClan.DataSource = dtClan;
-
-                // Termini (prikaz s treningom/trenerom/dvoranom + slobodno mjesta)
-                DataTable dtTermin = Db.Query(
-                    "select " +
-                    "  tt.termin_treninga_id, " +
-                    "  (to_char(tt.pocetak, 'DD.MM.YYYY HH24:MI') || ' - ' || tr.naziv || ' - ' || " +
-                    "   (te.ime || ' ' || te.prezime) || ' - ' || d.naziv || " +
-                    "   ' (slobodno: ' || (tt.kapacitet - count(p.prijava_id)) || ')' || " +
-                    "   case when tt.pocetak < now() then ' [PROŠAO]' else '' end" +
-                    "  ) as naziv " +
-                    "from termin_treninga tt " +
-                    "join trening tr on tr.trening_id = tt.trening_id " +
-                    "join trener te on te.trener_id = tt.trener_id " +
-                    "join dvorana d on d.dvorana_id = tt.dvorana_id " +
-                    "left join prijava p on p.termin_treninga_id = tt.termin_treninga_id and p.status = 'aktivna' " +
-                    "group by tt.termin_treninga_id, tt.pocetak, tr.naziv, te.ime, te.prezime, d.naziv, tt.kapacitet " +
-                    "order by tt.pocetak desc"
-                );
-
-                cbTermin.DisplayMember = "naziv";
-                cbTermin.ValueMember = "termin_treninga_id";
-                cbTermin.DataSource = dtTermin;
-
-                SetPoruka("");
-            }
-            catch (Exception ex)
-            {
-                SetPoruka("Greška kod učitavanja lista: " + ex.Message);
-            }
+            Ui.FillCombo(
+                cbClan,
+                "select clan_id, (ime || ' ' || prezime) as naziv from clan order by naziv",
+                "naziv",
+                "clan_id",
+                keepSelected
+            );
         }
 
-        private void UcitajTermineSamo()
+        private void UcitajTermine(object? keepSelected = null)
         {
-            // Osvježi slobodna mjesta u nazivu termina (nakon prijave/otkazivanja/brisanja)
-            try
-            {
-                object? trenutni = cbTermin.SelectedValue;
-
-                DataTable dtTermin = Db.Query(
-                    "select " +
-                    "  tt.termin_treninga_id, " +
-                    "  (to_char(tt.pocetak, 'DD.MM.YYYY HH24:MI') || ' - ' || tr.naziv || ' - ' || " +
-                    "   (te.ime || ' ' || te.prezime) || ' - ' || d.naziv || " +
-                    "   ' (slobodno: ' || (tt.kapacitet - count(p.prijava_id)) || ')' || " +
-                    "   case when tt.pocetak < now() then ' [PROŠAO]' else '' end" +
-                    "  ) as naziv " +
-                    "from termin_treninga tt " +
-                    "join trening tr on tr.trening_id = tt.trening_id " +
-                    "join trener te on te.trener_id = tt.trener_id " +
-                    "join dvorana d on d.dvorana_id = tt.dvorana_id " +
-                    "left join prijava p on p.termin_treninga_id = tt.termin_treninga_id and p.status = 'aktivna' " +
-                    "group by tt.termin_treninga_id, tt.pocetak, tr.naziv, te.ime, te.prezime, d.naziv, tt.kapacitet " +
-                    "order by tt.pocetak desc"
-                );
-
-                _ucitavanje = true;
-                cbTermin.DataSource = dtTermin;
-                _ucitavanje = false;
-
-                if (trenutni != null)
-                    cbTermin.SelectedValue = trenutni;
-            }
-            catch
-            {
-                // ignore
-            }
+            Ui.FillCombo(
+                cbTermin,
+                "select " +
+                "  tt.termin_treninga_id, " +
+                "  (to_char(tt.pocetak, 'DD.MM.YYYY HH24:MI') || ' - ' || tr.naziv || ' - ' || " +
+                "   (te.ime || ' ' || te.prezime) || ' - ' || d.naziv || " +
+                "   ' (slobodno: ' || (tt.kapacitet - count(p.prijava_id)) || ')' || " +
+                "   case when tt.pocetak < now() then ' [PROŠAO]' else '' end" +
+                "  ) as naziv " +
+                "from termin_treninga tt " +
+                "join trening tr on tr.trening_id = tt.trening_id " +
+                "join trener te on te.trener_id = tt.trener_id " +
+                "join dvorana d on d.dvorana_id = tt.dvorana_id " +
+                "left join prijava p on p.termin_treninga_id = tt.termin_treninga_id and p.status = 'aktivna' " +
+                "group by tt.termin_treninga_id, tt.pocetak, tr.naziv, te.ime, te.prezime, d.naziv, tt.kapacitet " +
+                "order by tt.pocetak desc",
+                "naziv",
+                "termin_treninga_id",
+                keepSelected
+            );
         }
 
         // ---------------------------
-        // Glavni grid: sve prijave
+        // Reload pattern (jedno mjesto)
+        // ---------------------------
+        private void ReloadAll(string? poruka)
+        {
+            object? keepClan = cbClan.SelectedValue;
+            object? keepTermin = cbTermin.SelectedValue;
+
+            OsvjeziPrijave();
+
+            _ucitavanje = true;
+            UcitajClanove(keepClan);
+            UcitajTermine(keepTermin);
+            _ucitavanje = false;
+
+            OsvjeziClanarinuZaOdabranogClana();
+
+            if (!string.IsNullOrWhiteSpace(poruka))
+                SetPoruka(poruka!);
+        }
+
+        private void RunAction(string okMsg, Action dbAction)
+        {
+            Db.Run(() =>
+            {
+                dbAction();
+                ReloadAll(okMsg);
+            }, SetPoruka);
+        }
+
+        // ---------------------------
+        // Grid: prijave
         // ---------------------------
         private void OsvjeziPrijave()
         {
-            try
+            DataTable dt = Db.Query(
+                "select " +
+                "  p.prijava_id, " +
+                "  p.clan_id, (c.ime || ' ' || c.prezime) as clan, " +
+                "  p.termin_treninga_id, " +
+                "  tr.naziv as trening, " +
+                "  (te.ime || ' ' || te.prezime) as trener, " +
+                "  d.naziv as dvorana, " +
+                "  tt.pocetak, " +
+                "  p.datum_prijave, " +
+                "  p.status " +
+                "from prijava p " +
+                "join clan c on c.clan_id = p.clan_id " +
+                "join termin_treninga tt on tt.termin_treninga_id = p.termin_treninga_id " +
+                "join trening tr on tr.trening_id = tt.trening_id " +
+                "join trener te on te.trener_id = tt.trener_id " +
+                "join dvorana d on d.dvorana_id = tt.dvorana_id " +
+                "order by p.prijava_id desc " +
+                "limit 150"
+            );
+
+            dgvPrijave.DataSource = dt;
+
+            if (dgvPrijave.Columns == null) return;
+
+            if (dgvPrijave.Columns.Contains("prijava_id"))
+                dgvPrijave.Columns["prijava_id"].HeaderText = "ID prijave";
+
+            if (dgvPrijave.Columns.Contains("clan"))
+                dgvPrijave.Columns["clan"].HeaderText = "Član";
+
+            if (dgvPrijave.Columns.Contains("trening"))
+                dgvPrijave.Columns["trening"].HeaderText = "Trening";
+
+            if (dgvPrijave.Columns.Contains("trener"))
+                dgvPrijave.Columns["trener"].HeaderText = "Trener";
+
+            if (dgvPrijave.Columns.Contains("dvorana"))
+                dgvPrijave.Columns["dvorana"].HeaderText = "Dvorana";
+
+            if (dgvPrijave.Columns.Contains("pocetak"))
             {
-                DataTable dt = Db.Query(
-                    "select " +
-                    "  p.prijava_id, " +
-                    "  p.clan_id, (c.ime || ' ' || c.prezime) as clan, " +
-                    "  p.termin_treninga_id, " +
-                    "  tr.naziv as trening, " +
-                    "  (te.ime || ' ' || te.prezime) as trener, " +
-                    "  d.naziv as dvorana, " +
-                    "  tt.pocetak, " +
-                    "  p.datum_prijave, " +
-                    "  p.status " +
-                    "from prijava p " +
-                    "join clan c on c.clan_id = p.clan_id " +
-                    "join termin_treninga tt on tt.termin_treninga_id = p.termin_treninga_id " +
-                    "join trening tr on tr.trening_id = tt.trening_id " +
-                    "join trener te on te.trener_id = tt.trener_id " +
-                    "join dvorana d on d.dvorana_id = tt.dvorana_id " +
-                    "order by p.prijava_id desc " +
-                    "limit 150"
-                );
-
-                dgvPrijave.DataSource = dt;
-
-                if (dgvPrijave.Columns != null)
-                {
-                    if (dgvPrijave.Columns.Contains("prijava_id"))
-                        dgvPrijave.Columns["prijava_id"].HeaderText = "ID prijave";
-
-                    if (dgvPrijave.Columns.Contains("clan"))
-                        dgvPrijave.Columns["clan"].HeaderText = "Član";
-
-                    if (dgvPrijave.Columns.Contains("trening"))
-                        dgvPrijave.Columns["trening"].HeaderText = "Trening";
-
-                    if (dgvPrijave.Columns.Contains("trener"))
-                        dgvPrijave.Columns["trener"].HeaderText = "Trener";
-
-                    if (dgvPrijave.Columns.Contains("dvorana"))
-                        dgvPrijave.Columns["dvorana"].HeaderText = "Dvorana";
-
-                    if (dgvPrijave.Columns.Contains("pocetak"))
-                    {
-                        dgvPrijave.Columns["pocetak"].HeaderText = "Početak termina";
-                        dgvPrijave.Columns["pocetak"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
-                    }
-
-                    if (dgvPrijave.Columns.Contains("datum_prijave"))
-                    {
-                        dgvPrijave.Columns["datum_prijave"].HeaderText = "Datum prijave";
-                        dgvPrijave.Columns["datum_prijave"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
-                    }
-
-                    if (dgvPrijave.Columns.Contains("status"))
-                        dgvPrijave.Columns["status"].HeaderText = "Status";
-
-                    // sakrij ID stupce
-                    if (dgvPrijave.Columns.Contains("clan_id"))
-                        dgvPrijave.Columns["clan_id"].Visible = false;
-
-                    if (dgvPrijave.Columns.Contains("termin_treninga_id"))
-                        dgvPrijave.Columns["termin_treninga_id"].Visible = false;
-                }
+                dgvPrijave.Columns["pocetak"].HeaderText = "Početak termina";
+                dgvPrijave.Columns["pocetak"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
             }
-            catch (Exception ex)
+
+            if (dgvPrijave.Columns.Contains("datum_prijave"))
             {
-                SetPoruka("Greška kod učitavanja prijava: " + ex.Message);
+                dgvPrijave.Columns["datum_prijave"].HeaderText = "Datum prijave";
+                dgvPrijave.Columns["datum_prijave"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
             }
+
+            if (dgvPrijave.Columns.Contains("status"))
+                dgvPrijave.Columns["status"].HeaderText = "Status";
+
+            if (dgvPrijave.Columns.Contains("clan_id"))
+                dgvPrijave.Columns["clan_id"].Visible = false;
+
+            if (dgvPrijave.Columns.Contains("termin_treninga_id"))
+                dgvPrijave.Columns["termin_treninga_id"].Visible = false;
         }
 
         // ---------------------------
-        // Dodatni grid: članarina odabranog člana
+        // Grid: članarina odabranog člana (parametrizirano!)
         // ---------------------------
         private void OsvjeziClanarinuZaOdabranogClana()
         {
@@ -233,48 +207,42 @@ namespace BP2_Projekt_Teretana
                 int clanId = Convert.ToInt32(cbClan.SelectedValue);
 
                 DataTable dt = Db.Query(
-                    "select " +
-                    "  cl.clanarina_id, " +
-                    "  p.naziv as paket, " +
-                    "  p.omogucuje_termine, " +
-                    "  cl.datum_pocetka, " +
-                    "  cl.datum_isteka, " +
-                    "  cl.status " +
+                    "select cl.clanarina_id, p.naziv as paket, p.omogucuje_termine, cl.datum_pocetka, cl.datum_isteka, cl.status " +
                     "from clanarina cl " +
                     "join paket p on p.paket_id = cl.paket_id " +
-                    "where cl.clan_id = " + clanId + " " +
+                    "where cl.clan_id = @id " +
                     "order by (cl.status = 'aktivna') desc, cl.datum_isteka desc " +
-                    "limit 5"
+                    "limit 5",
+                    new NpgsqlParameter("@id", clanId)
                 );
 
                 dgvClanarina.DataSource = dt;
 
-                if (dgvClanarina.Columns != null)
+                if (dgvClanarina.Columns == null) return;
+
+                if (dgvClanarina.Columns.Contains("clanarina_id"))
+                    dgvClanarina.Columns["clanarina_id"].HeaderText = "Članarina ID";
+
+                if (dgvClanarina.Columns.Contains("paket"))
+                    dgvClanarina.Columns["paket"].HeaderText = "Paket";
+
+                if (dgvClanarina.Columns.Contains("omogucuje_termine"))
+                    dgvClanarina.Columns["omogucuje_termine"].HeaderText = "Omog. termine";
+
+                if (dgvClanarina.Columns.Contains("datum_pocetka"))
                 {
-                    if (dgvClanarina.Columns.Contains("clanarina_id"))
-                        dgvClanarina.Columns["clanarina_id"].HeaderText = "Članarina ID";
-
-                    if (dgvClanarina.Columns.Contains("paket"))
-                        dgvClanarina.Columns["paket"].HeaderText = "Paket";
-
-                    if (dgvClanarina.Columns.Contains("omogucuje_termine"))
-                        dgvClanarina.Columns["omogucuje_termine"].HeaderText = "Omog. termine";
-
-                    if (dgvClanarina.Columns.Contains("datum_pocetka"))
-                    {
-                        dgvClanarina.Columns["datum_pocetka"].HeaderText = "Početak";
-                        dgvClanarina.Columns["datum_pocetka"].DefaultCellStyle.Format = "dd.MM.yyyy";
-                    }
-
-                    if (dgvClanarina.Columns.Contains("datum_isteka"))
-                    {
-                        dgvClanarina.Columns["datum_isteka"].HeaderText = "Istek";
-                        dgvClanarina.Columns["datum_isteka"].DefaultCellStyle.Format = "dd.MM.yyyy";
-                    }
-
-                    if (dgvClanarina.Columns.Contains("status"))
-                        dgvClanarina.Columns["status"].HeaderText = "Status";
+                    dgvClanarina.Columns["datum_pocetka"].HeaderText = "Početak";
+                    dgvClanarina.Columns["datum_pocetka"].DefaultCellStyle.Format = "dd.MM.yyyy";
                 }
+
+                if (dgvClanarina.Columns.Contains("datum_isteka"))
+                {
+                    dgvClanarina.Columns["datum_isteka"].HeaderText = "Istek";
+                    dgvClanarina.Columns["datum_isteka"].DefaultCellStyle.Format = "dd.MM.yyyy";
+                }
+
+                if (dgvClanarina.Columns.Contains("status"))
+                    dgvClanarina.Columns["status"].HeaderText = "Status";
             }
             catch (Exception ex)
             {
@@ -283,7 +251,7 @@ namespace BP2_Projekt_Teretana
         }
 
         // ---------------------------
-        // Akcije
+        // Helpers
         // ---------------------------
         private bool ProcitajUnos(out int clanId, out int terminId)
         {
@@ -307,31 +275,6 @@ namespace BP2_Projekt_Teretana
             return true;
         }
 
-        private void btnPrijavi_Click(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (!ProcitajUnos(out int clanId, out int terminId))
-                    return;
-
-                Db.Exec(
-                    "insert into prijava (clan_id, termin_treninga_id, status) values (@c, @t, 'aktivna')",
-                    new NpgsqlParameter("@c", clanId),
-                    new NpgsqlParameter("@t", terminId)
-                );
-
-                SetPoruka("Prijava je uspješno spremljena.");
-
-                OsvjeziPrijave();
-                UcitajTermineSamo();
-                OsvjeziClanarinuZaOdabranogClana();
-            }
-            catch (Exception ex)
-            {
-                SetPoruka(ex.Message);
-            }
-        }
-
         private int? DohvatiOdabranuPrijavuId()
         {
             if (dgvPrijave.CurrentRow == null) return null;
@@ -340,62 +283,58 @@ namespace BP2_Projekt_Teretana
             return Convert.ToInt32(v);
         }
 
+        // ---------------------------
+        // Actions
+        // ---------------------------
+        private void btnPrijavi_Click(object? sender, EventArgs e)
+        {
+            if (!ProcitajUnos(out int clanId, out int terminId)) return;
+
+            RunAction("Prijava je uspješno spremljena.", () =>
+                Db.Exec(
+                    "insert into prijava (clan_id, termin_treninga_id, status) values (@c, @t, 'aktivna')",
+                    new NpgsqlParameter("@c", clanId),
+                    new NpgsqlParameter("@t", terminId)
+                )
+            );
+        }
+
         private void btnOtkazi_Click(object? sender, EventArgs e)
         {
-            try
+            int? prijavaId = DohvatiOdabranuPrijavuId();
+            if (prijavaId == null)
             {
-                int? prijavaId = DohvatiOdabranuPrijavuId();
-                if (prijavaId == null)
-                {
-                    SetPoruka("Odaberi prijavu koju želiš otkazati.");
-                    return;
-                }
+                SetPoruka("Odaberi prijavu koju želiš otkazati.");
+                return;
+            }
 
+            RunAction("Prijava je otkazana.", () =>
                 Db.Exec(
                     "update prijava set status = 'otkazana' where prijava_id = @id",
                     new NpgsqlParameter("@id", prijavaId.Value)
-                );
-
-                SetPoruka("Prijava je otkazana.");
-
-                OsvjeziPrijave();
-                UcitajTermineSamo();
-            }
-            catch (Exception ex)
-            {
-                SetPoruka(ex.Message);
-            }
+                )
+            );
         }
 
         private void btnObrisi_Click(object? sender, EventArgs e)
         {
-            try
+            int? prijavaId = DohvatiOdabranuPrijavuId();
+            if (prijavaId == null)
             {
-                int? prijavaId = DohvatiOdabranuPrijavuId();
-                if (prijavaId == null)
-                {
-                    SetPoruka("Odaberi prijavu koju želiš obrisati.");
-                    return;
-                }
+                SetPoruka("Odaberi prijavu koju želiš obrisati.");
+                return;
+            }
 
+            RunAction("Prijava je obrisana.", () =>
                 Db.Exec(
                     "delete from prijava where prijava_id = @id",
                     new NpgsqlParameter("@id", prijavaId.Value)
-                );
-
-                SetPoruka("Prijava je obrisana.");
-
-                OsvjeziPrijave();
-                UcitajTermineSamo();
-            }
-            catch (Exception ex)
-            {
-                SetPoruka(ex.Message);
-            }
+                )
+            );
         }
 
         // ---------------------------
-        // Eventovi
+        // Events
         // ---------------------------
         private void cbClan_SelectedIndexChanged(object? sender, EventArgs e)
         {
@@ -405,10 +344,11 @@ namespace BP2_Projekt_Teretana
 
         private void dgvPrijave_SelectionChanged(object? sender, EventArgs e)
         {
+            if (_ucitavanje) return;
+            if (dgvPrijave.CurrentRow == null) return;
+
             try
             {
-                if (dgvPrijave.CurrentRow == null) return;
-
                 object? vc = dgvPrijave.CurrentRow.Cells["clan_id"]?.Value;
                 object? vt = dgvPrijave.CurrentRow.Cells["termin_treninga_id"]?.Value;
 

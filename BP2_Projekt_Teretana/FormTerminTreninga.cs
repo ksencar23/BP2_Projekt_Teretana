@@ -7,47 +7,47 @@ namespace BP2_Projekt_Teretana
 {
     public partial class FormTerminTreninga : Form
     {
+        private bool _ucitavanje = false;
+
         public FormTerminTreninga()
         {
             InitializeComponent();
 
-            // Grid (isto kao tvoje forme)
             dgvTermini.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvTermini.MultiSelect = false;
             dgvTermini.ReadOnly = true;
             dgvTermini.AllowUserToAddRows = false;
 
-            // ComboBox - da se ne upisuje tekst ručno
             cbTrening.DropDownStyle = ComboBoxStyle.DropDownList;
             cbTrener.DropDownStyle = ComboBoxStyle.DropDownList;
             cbDvorana.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            // DateTimePicker za datum + vrijeme
             dtpPocetak.Format = DateTimePickerFormat.Custom;
             dtpPocetak.CustomFormat = "dd.MM.yyyy HH:mm";
             dtpPocetak.ShowUpDown = true;
 
-            // NumericUpDown defaulti (možeš promijeniti u Designeru)
             nudTrajanjeMin.Minimum = 1;
             nudTrajanjeMin.Maximum = 600;
 
             nudKapacitet.Minimum = 1;
             nudKapacitet.Maximum = 200;
 
-            // Hook događaja (radi i ako nisi spojio u Designeru)
             Load += FormTerminTreninga_Load;
             btnDodaj.Click += btnDodaj_Click;
             btnAzuriraj.Click += btnAzuriraj_Click;
             btnObrisi.Click += btnObrisi_Click;
-            btnOcisti.Click += btnOcisti_Click;
 
             dgvTermini.SelectionChanged += dgvTermini_SelectionChanged;
         }
 
         private void FormTerminTreninga_Load(object? sender, EventArgs e)
         {
+            _ucitavanje = true;
+
             UcitajListe();
-            Osvjezi();
+            ReloadAll(null, keepSelection: false);
+
+            _ucitavanje = false;
         }
 
         private void SetPoruka(string poruka)
@@ -57,27 +57,16 @@ namespace BP2_Projekt_Teretana
             txtPoruka.ScrollToCaret();
         }
 
+        // ---------------------------
+        // Generic ComboBox load
+        // ---------------------------
         private void UcitajListe()
         {
             try
             {
-                // trening
-                var dtTrening = Db.Query("select trening_id, naziv from trening order by naziv");
-                cbTrening.DisplayMember = "naziv";
-                cbTrening.ValueMember = "trening_id";
-                cbTrening.DataSource = dtTrening;
-
-                // trener (ime + prezime kao prikaz)
-                var dtTrener = Db.Query("select trener_id, (ime || ' ' || prezime) as naziv from trener order by naziv");
-                cbTrener.DisplayMember = "naziv";
-                cbTrener.ValueMember = "trener_id";
-                cbTrener.DataSource = dtTrener;
-
-                // dvorana
-                var dtDvorana = Db.Query("select dvorana_id, naziv from dvorana order by naziv");
-                cbDvorana.DisplayMember = "naziv";
-                cbDvorana.ValueMember = "dvorana_id";
-                cbDvorana.DataSource = dtDvorana;
+                Ui.FillCombo(cbTrening, "select trening_id, naziv from trening order by naziv", "naziv", "trening_id");
+                Ui.FillCombo(cbTrener, "select trener_id, (ime || ' ' || prezime) as naziv from trener order by naziv", "naziv", "trener_id");
+                Ui.FillCombo(cbDvorana, "select dvorana_id, naziv from dvorana order by naziv", "naziv", "dvorana_id");
 
                 SetPoruka("");
             }
@@ -87,95 +76,130 @@ namespace BP2_Projekt_Teretana
             }
         }
 
-        private void Osvjezi()
+        // ---------------------------
+        // Reload pattern (jedno mjesto)
+        // ---------------------------
+        private void ReloadAll(string? poruka, bool keepSelection = true)
         {
-            try
+            int? selectedId = keepSelection ? DohvatiOdabraniTerminId() : null;
+
+            OsvjeziTermine();
+
+            if (selectedId != null)
+                SelectRowById(dgvTermini, "termin_treninga_id", selectedId.Value);
+
+            if (!string.IsNullOrWhiteSpace(poruka))
+                SetPoruka(poruka!);
+        }
+
+        private void RunAction(string okMsg, Action dbAction)
+        {
+            Db.Run(() =>
             {
-                // Raspored termina + popunjenost (broj aktivnih prijava i slobodna mjesta)
-                DataTable dt = Db.Query(
-                    "select " +
-                    "  tt.termin_treninga_id, " +
-                    "  tt.trening_id, tr.naziv as trening, " +
-                    "  tt.trener_id, (te.ime || ' ' || te.prezime) as trener, " +
-                    "  tt.dvorana_id, d.naziv as dvorana, " +
-                    "  tt.pocetak, tt.trajanje_min, tt.kapacitet, " +
-                    "  count(p.prijava_id) as broj_prijava, " +
-                    "  (tt.kapacitet - count(p.prijava_id)) as slobodno_mjesta " +
-                    "from termin_treninga tt " +
-                    "join trening tr on tr.trening_id = tt.trening_id " +
-                    "join trener  te on te.trener_id = tt.trener_id " +
-                    "join dvorana d  on d.dvorana_id = tt.dvorana_id " +
-                    "left join prijava p on p.termin_treninga_id = tt.termin_treninga_id and p.status = 'aktivna' " +
-                    "group by tt.termin_treninga_id, tt.trening_id, tr.naziv, tt.trener_id, te.ime, te.prezime, tt.dvorana_id, d.naziv, tt.pocetak, tt.trajanje_min, tt.kapacitet " +
-                    "order by tt.pocetak desc " +
-                    "limit 200"
-                );
+                dbAction();
+                ReloadAll(okMsg, keepSelection: true);
+            }, SetPoruka);
+        }
 
-                dgvTermini.DataSource = dt;
+        // ---------------------------
+        // Grid load
+        // ---------------------------
+        private void OsvjeziTermine()
+        {
+            DataTable dt = Db.Query(
+                "select " +
+                "  tt.termin_treninga_id, " +
+                "  tt.trening_id, tr.naziv as trening, " +
+                "  tt.trener_id, (te.ime || ' ' || te.prezime) as trener, " +
+                "  tt.dvorana_id, d.naziv as dvorana, " +
+                "  tt.pocetak, tt.trajanje_min, tt.kapacitet, " +
+                "  count(p.prijava_id) as broj_prijava, " +
+                "  (tt.kapacitet - count(p.prijava_id)) as slobodno_mjesta " +
+                "from termin_treninga tt " +
+                "join trening tr on tr.trening_id = tt.trening_id " +
+                "join trener te on te.trener_id = tt.trener_id " +
+                "join dvorana d on d.dvorana_id = tt.dvorana_id " +
+                "left join prijava p on p.termin_treninga_id = tt.termin_treninga_id and p.status = 'aktivna' " +
+                "group by tt.termin_treninga_id, tt.trening_id, tr.naziv, tt.trener_id, te.ime, te.prezime, tt.dvorana_id, d.naziv, tt.pocetak, tt.trajanje_min, tt.kapacitet " +
+                "order by tt.pocetak desc " +
+                "limit 200"
+            );
 
-                if (dgvTermini.Columns != null)
-                {
-                    // Headeri
-                    if (dgvTermini.Columns.Contains("termin_treninga_id"))
-                        dgvTermini.Columns["termin_treninga_id"].HeaderText = "ID termina";
+            dgvTermini.DataSource = dt;
 
-                    if (dgvTermini.Columns.Contains("trening"))
-                        dgvTermini.Columns["trening"].HeaderText = "Trening";
+            if (dgvTermini.Columns == null) return;
 
-                    if (dgvTermini.Columns.Contains("trener"))
-                        dgvTermini.Columns["trener"].HeaderText = "Trener";
+            if (dgvTermini.Columns.Contains("termin_treninga_id"))
+                dgvTermini.Columns["termin_treninga_id"].HeaderText = "ID termina";
 
-                    if (dgvTermini.Columns.Contains("dvorana"))
-                        dgvTermini.Columns["dvorana"].HeaderText = "Dvorana";
+            if (dgvTermini.Columns.Contains("trening"))
+                dgvTermini.Columns["trening"].HeaderText = "Trening";
 
-                    if (dgvTermini.Columns.Contains("pocetak"))
-                    {
-                        dgvTermini.Columns["pocetak"].HeaderText = "Početak";
-                        dgvTermini.Columns["pocetak"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
-                    }
+            if (dgvTermini.Columns.Contains("trener"))
+                dgvTermini.Columns["trener"].HeaderText = "Trener";
 
-                    if (dgvTermini.Columns.Contains("trajanje_min"))
-                        dgvTermini.Columns["trajanje_min"].HeaderText = "Trajanje (min)";
+            if (dgvTermini.Columns.Contains("dvorana"))
+                dgvTermini.Columns["dvorana"].HeaderText = "Dvorana";
 
-                    if (dgvTermini.Columns.Contains("kapacitet"))
-                        dgvTermini.Columns["kapacitet"].HeaderText = "Kapacitet";
-
-                    if (dgvTermini.Columns.Contains("broj_prijava"))
-                        dgvTermini.Columns["broj_prijava"].HeaderText = "Aktivnih prijava";
-
-                    if (dgvTermini.Columns.Contains("slobodno_mjesta"))
-                        dgvTermini.Columns["slobodno_mjesta"].HeaderText = "Slobodno";
-
-                    // Sakrij “ID” stupce da grid bude uredniji (ali ostaju dostupni za SelectionChanged)
-                    if (dgvTermini.Columns.Contains("trening_id"))
-                        dgvTermini.Columns["trening_id"].Visible = false;
-
-                    if (dgvTermini.Columns.Contains("trener_id"))
-                        dgvTermini.Columns["trener_id"].Visible = false;
-
-                    if (dgvTermini.Columns.Contains("dvorana_id"))
-                        dgvTermini.Columns["dvorana_id"].Visible = false;
-                }
-
-                SetPoruka("");
-            }
-            catch (Exception ex)
+            if (dgvTermini.Columns.Contains("pocetak"))
             {
-                SetPoruka("Greška kod učitavanja termina: " + ex.Message);
+                dgvTermini.Columns["pocetak"].HeaderText = "Početak";
+                dgvTermini.Columns["pocetak"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
             }
+
+            if (dgvTermini.Columns.Contains("trajanje_min"))
+                dgvTermini.Columns["trajanje_min"].HeaderText = "Trajanje (min)";
+
+            if (dgvTermini.Columns.Contains("kapacitet"))
+                dgvTermini.Columns["kapacitet"].HeaderText = "Kapacitet";
+
+            if (dgvTermini.Columns.Contains("broj_prijava"))
+                dgvTermini.Columns["broj_prijava"].HeaderText = "Aktivnih prijava";
+
+            if (dgvTermini.Columns.Contains("slobodno_mjesta"))
+                dgvTermini.Columns["slobodno_mjesta"].HeaderText = "Slobodno";
+
+            if (dgvTermini.Columns.Contains("trening_id"))
+                dgvTermini.Columns["trening_id"].Visible = false;
+
+            if (dgvTermini.Columns.Contains("trener_id"))
+                dgvTermini.Columns["trener_id"].Visible = false;
+
+            if (dgvTermini.Columns.Contains("dvorana_id"))
+                dgvTermini.Columns["dvorana_id"].Visible = false;
         }
 
         private int? DohvatiOdabraniTerminId()
         {
             if (dgvTermini.CurrentRow == null) return null;
-
             object? v = dgvTermini.CurrentRow.Cells["termin_treninga_id"]?.Value;
             if (v == null) return null;
-
             return Convert.ToInt32(v);
         }
 
-        private bool ProcitajUnos(out int treningId, out int trenerId, out int dvoranaId, out DateTime pocetak, out int trajanjeMin, out int kapacitet)
+        private static void SelectRowById(DataGridView dgv, string idColumn, int id)
+        {
+            if (dgv.Rows == null || dgv.Rows.Count == 0) return;
+
+            foreach (DataGridViewRow row in dgv.Rows)
+            {
+                var cellVal = row.Cells[idColumn]?.Value;
+                if (cellVal == null) continue;
+
+                if (Convert.ToInt32(cellVal) == id)
+                {
+                    row.Selected = true;
+                    dgv.CurrentCell = row.Cells[0];
+                    return;
+                }
+            }
+        }
+
+        // ---------------------------
+        // Read inputs
+        // ---------------------------
+        private bool ProcitajUnos(out int treningId, out int trenerId, out int dvoranaId,
+                                 out DateTime pocetak, out int trajanjeMin, out int kapacitet)
         {
             treningId = trenerId = dvoranaId = trajanjeMin = kapacitet = 0;
             pocetak = dtpPocetak.Value;
@@ -197,13 +221,16 @@ namespace BP2_Projekt_Teretana
             return true;
         }
 
+        // ---------------------------
+        // Actions
+        // ---------------------------
         private void btnDodaj_Click(object? sender, EventArgs e)
         {
-            try
-            {
-                if (!ProcitajUnos(out int treningId, out int trenerId, out int dvoranaId, out DateTime pocetak, out int trajanjeMin, out int kapacitet))
-                    return;
+            if (!ProcitajUnos(out int treningId, out int trenerId, out int dvoranaId,
+                             out DateTime pocetak, out int trajanjeMin, out int kapacitet))
+                return;
 
+            RunAction("Termin je uspješno dodan.", () =>
                 Db.Exec(
                     "insert into termin_treninga (trening_id, trener_id, dvorana_id, pocetak, trajanje_min, kapacitet) " +
                     "values (@tg, @tr, @dv, @p, @tm, @k)",
@@ -213,32 +240,24 @@ namespace BP2_Projekt_Teretana
                     new NpgsqlParameter("@p", pocetak),
                     new NpgsqlParameter("@tm", trajanjeMin),
                     new NpgsqlParameter("@k", kapacitet)
-                );
-
-                SetPoruka("Termin je uspješno dodan.");
-                Osvjezi();
-            }
-            catch (Exception ex)
-            {
-                // Ovdje ćeš dobiti i poruke iz triggera za preklapanje trenera/dvorane
-                SetPoruka(ex.Message);
-            }
+                )
+            );
         }
 
         private void btnAzuriraj_Click(object? sender, EventArgs e)
         {
-            try
+            int? terminId = DohvatiOdabraniTerminId();
+            if (terminId == null)
             {
-                int? terminId = DohvatiOdabraniTerminId();
-                if (terminId == null)
-                {
-                    SetPoruka("Odaberi termin koji želiš ažurirati.");
-                    return;
-                }
+                SetPoruka("Odaberi termin koji želiš ažurirati.");
+                return;
+            }
 
-                if (!ProcitajUnos(out int treningId, out int trenerId, out int dvoranaId, out DateTime pocetak, out int trajanjeMin, out int kapacitet))
-                    return;
+            if (!ProcitajUnos(out int treningId, out int trenerId, out int dvoranaId,
+                             out DateTime pocetak, out int trajanjeMin, out int kapacitet))
+                return;
 
+            RunAction("Termin je ažuriran.", () =>
                 Db.Exec(
                     "update termin_treninga " +
                     "set trening_id=@tg, trener_id=@tr, dvorana_id=@dv, pocetak=@p, trajanje_min=@tm, kapacitet=@k " +
@@ -250,82 +269,49 @@ namespace BP2_Projekt_Teretana
                     new NpgsqlParameter("@tm", trajanjeMin),
                     new NpgsqlParameter("@k", kapacitet),
                     new NpgsqlParameter("@id", terminId.Value)
-                );
-
-                SetPoruka("Termin je ažuriran.");
-                Osvjezi();
-            }
-            catch (Exception ex)
-            {
-                SetPoruka(ex.Message);
-            }
+                )
+            );
         }
 
         private void btnObrisi_Click(object? sender, EventArgs e)
         {
-            try
+            int? terminId = DohvatiOdabraniTerminId();
+            if (terminId == null)
             {
-                int? terminId = DohvatiOdabraniTerminId();
-                if (terminId == null)
-                {
-                    SetPoruka("Odaberi termin koji želiš obrisati.");
-                    return;
-                }
-
-                var r = MessageBox.Show(
-                    "Brisanjem termina obrisat će se i prijave na taj termin (ako postoje). Nastaviti?",
-                    "Potvrda brisanja",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Warning
-                );
-
-                if (r != DialogResult.Yes)
-                    return;
-
-                Db.Exec(
-                    "delete from termin_treninga where termin_treninga_id = @id",
-                    new NpgsqlParameter("@id", terminId.Value)
-                );
-
-                SetPoruka("Termin je obrisan.");
-                Osvjezi();
+                SetPoruka("Odaberi termin koji želiš obrisati.");
+                return;
             }
-            catch (Exception ex)
-            {
-                SetPoruka(ex.Message);
-            }
+
+            var r = MessageBox.Show(
+                "Brisanjem termina obrisat će se i prijave na taj termin (ako postoje). Nastaviti?",
+                "Potvrda brisanja",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning
+            );
+
+            if (r != DialogResult.Yes) return;
+
+            RunAction("Termin je obrisan.", () =>
+                Db.Exec("delete from termin_treninga where termin_treninga_id=@id",
+                    new NpgsqlParameter("@id", terminId.Value))
+            );
         }
 
-        private void btnOcisti_Click(object? sender, EventArgs e)
-        {
-            try
-            {
-                if (cbTrening.Items.Count > 0) cbTrening.SelectedIndex = 0;
-                if (cbTrener.Items.Count > 0) cbTrener.SelectedIndex = 0;
-                if (cbDvorana.Items.Count > 0) cbDvorana.SelectedIndex = 0;
-
-                dtpPocetak.Value = DateTime.Now;
-                nudTrajanjeMin.Value = Math.Max(nudTrajanjeMin.Minimum, 60);
-                nudKapacitet.Value = Math.Max(nudKapacitet.Minimum, 10);
-
-                SetPoruka("");
-            }
-            catch
-            {
-                // ignore
-            }
-        }
-
+        // ---------------------------
+        // Selection -> controls
+        // ---------------------------
         private void dgvTermini_SelectionChanged(object? sender, EventArgs e)
         {
+            if (_ucitavanje) return;
+            if (dgvTermini.CurrentRow == null) return;
+
             try
             {
-                if (dgvTermini.CurrentRow == null) return;
-
-                // ID-evi (skriveni u gridu) -> postavi ComboBox SelectedValue
                 object? vt = dgvTermini.CurrentRow.Cells["trening_id"]?.Value;
                 object? vtr = dgvTermini.CurrentRow.Cells["trener_id"]?.Value;
                 object? vd = dgvTermini.CurrentRow.Cells["dvorana_id"]?.Value;
+
+                _ucitavanje = true;
 
                 if (vt != null) cbTrening.SelectedValue = Convert.ToInt32(vt);
                 if (vtr != null) cbTrener.SelectedValue = Convert.ToInt32(vtr);
@@ -352,11 +338,10 @@ namespace BP2_Projekt_Teretana
             {
                 // ignore
             }
-        }
-
-        private void dgvTermini_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
+            finally
+            {
+                _ucitavanje = false;
+            }
         }
     }
 }

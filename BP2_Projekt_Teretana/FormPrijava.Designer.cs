@@ -148,12 +148,11 @@
             // txtPoruka
             // 
             txtPoruka.BackColor = Color.White;
-            txtPoruka.BorderStyle = BorderStyle.FixedSingle;
+            txtPoruka.BorderStyle = BorderStyle.None;
             txtPoruka.Location = new Point(894, 496);
             txtPoruka.Multiline = true;
             txtPoruka.Name = "txtPoruka";
             txtPoruka.ReadOnly = true;
-            txtPoruka.ScrollBars = ScrollBars.Vertical;
             txtPoruka.Size = new Size(381, 129);
             txtPoruka.TabIndex = 0;
             txtPoruka.TabStop = false;
