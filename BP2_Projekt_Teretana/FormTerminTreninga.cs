@@ -353,5 +353,10 @@ namespace BP2_Projekt_Teretana
                 // ignore
             }
         }
+
+        private void dgvTermini_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }

@@ -47,19 +47,24 @@
             lblKapacitet = new Label();
             lblDatumIVrijeme = new Label();
             lblPoruka = new Label();
+            tlpMain = new TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)dgvTermini).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudTrajanjeMin).BeginInit();
             ((System.ComponentModel.ISupportInitialize)nudKapacitet).BeginInit();
+            tlpMain.SuspendLayout();
             SuspendLayout();
             // 
             // dgvTermini
             // 
+            dgvTermini.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dgvTermini.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvTermini.Location = new Point(165, 12);
+            dgvTermini.Dock = DockStyle.Fill;
+            dgvTermini.Location = new Point(3, 3);
             dgvTermini.Name = "dgvTermini";
             dgvTermini.RowHeadersWidth = 51;
-            dgvTermini.Size = new Size(746, 263);
+            dgvTermini.Size = new Size(1080, 271);
             dgvTermini.TabIndex = 0;
+            dgvTermini.CellContentClick += dgvTermini_CellContentClick;
             // 
             // txtPoruka
             // 
@@ -233,11 +238,27 @@
             lblPoruka.TabIndex = 17;
             lblPoruka.Text = "Poruka:";
             // 
+            // tlpMain
+            // 
+            tlpMain.ColumnCount = 1;
+            tlpMain.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpMain.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tlpMain.Controls.Add(dgvTermini, 0, 0);
+            tlpMain.Dock = DockStyle.Top;
+            tlpMain.Location = new Point(0, 0);
+            tlpMain.Name = "tlpMain";
+            tlpMain.RowCount = 1;
+            tlpMain.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tlpMain.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tlpMain.Size = new Size(1086, 277);
+            tlpMain.TabIndex = 19;
+            // 
             // FormTerminTreninga
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1086, 602);
+            Controls.Add(tlpMain);
             Controls.Add(lblDatumIVrijeme);
             Controls.Add(lblTrener);
             Controls.Add(lblTrajanje);
@@ -256,13 +277,13 @@
             Controls.Add(btnDodaj);
             Controls.Add(dtpPocetak);
             Controls.Add(txtPoruka);
-            Controls.Add(dgvTermini);
             Name = "FormTerminTreninga";
             Text = "Termin treninga";
             Load += FormTerminTreninga_Load;
             ((System.ComponentModel.ISupportInitialize)dgvTermini).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudTrajanjeMin).EndInit();
             ((System.ComponentModel.ISupportInitialize)nudKapacitet).EndInit();
+            tlpMain.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -288,5 +309,6 @@
         private Label lblKapacitet;
         private Label lblDatumIVrijeme;
         private Label lblPoruka;
+        private TableLayoutPanel tlpMain;
     }
 }
